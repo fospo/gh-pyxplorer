@@ -2,7 +2,7 @@ import argparse
 import sys
 import logging
 import signal
-from crawler import dry_run
+from common import dry_run
 
 
 def signal_handler(sig, frame):

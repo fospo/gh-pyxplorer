@@ -2,11 +2,11 @@ import argparse
 import sys
 import logging
 import signal
-from crawler import dry_run, crawl
+from crawler import dry_run
 
 
 def signal_handler(sig, frame):
-    print("You pressed Ctrl+C!")
+    print("Catched SIGINT, closing...")
     exit(-1)
 
 
@@ -45,8 +45,7 @@ if __name__ == "__main__":
 
     if args.dryrun:
         logging.info("Performing dry run on " + args.dryrun)
-        if dry_run(args.dryrun):
-            sys.exit(0)
-        sys.exit(-1)
+        if not dry_run(args.dryrun):
+            sys.exit(-1)
 
     sys.exit(0)

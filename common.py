@@ -10,15 +10,15 @@ def dry_run(inputOrg: str) -> bool:
     GH_TOKEN = os.getenv("GH_TOKEN")
     g = Github(GH_TOKEN)
 
-    try:
-        # get paginated result of repos
-        orgRepos = g.get_organization(inputOrg).get_repos()
+    # get paginated result of repos
+    orgRepos = g.get_organization(inputOrg).get_repos()
 
+    try:
         # handle a pool of thread
         threadPool = concurrent.futures.ThreadPoolExecutor(MAX_WORKERS)
-        threadPool.map(exploreLicenses, orgRepos)
+        threadPool.map(explore_licenses, orgRepos)
     except Exception as e:
-        logging.error("Error in thread pool execution. Check " + e)
+        logging.error("Error in thread pool execution. Check " + repr(e))
         return False
     finally:
         # Shutdown waits for all threads to finish by default
@@ -27,10 +27,29 @@ def dry_run(inputOrg: str) -> bool:
     return True
 
 
-def exploreLicenses(repository: str):
+def explore_licenses(repository: str):
     """Exploring the repository (input) and printing the license.name"""
+    licenseName = "Empty"
     try:
-        license = repository.get_license()
-        print(repository.name + "," + license.license.name)
+        repoLicense = repository.get_license()
+        licenseName = repoLicense.license.name
     except Exception:
-        print(repository.name + "," + "Empty")
+        # if repoLicense is empty, exception is raised
+        licenseName = check_other_license_names(repository)
+    finally:
+        print(repository.name + "," + licenseName)
+
+
+def check_other_license_names(repository):
+    """Heuristic: if I get 404 on get_license, let's dig a bit deeper
+    There may be some files other than `LICENSE.md` or `LICENSE` that fit
+    the license definition. Let's find out"""
+
+    licenseNameList = ["license", "licenza"]
+
+    # Get all root repository contents to find a match with possible names
+    for content in repository.get_contents(""):
+        for license in licenseNameList:
+            if license in content.path.lower():
+                return content.path
+    return "Empty"

@@ -1,36 +1,51 @@
-import os
+import argparse
+import sys
 import logging
-from github import Github
-import concurrent.futures
+import signal
+from crawler import dry_run
 
 
-def dry_run(inputOrg: str) -> bool:
-    """Working just on GitHub for the moment"""
-    MAX_WORKERS = 10
-    GH_TOKEN = os.getenv("GH_TOKEN")
-    g = Github(GH_TOKEN)
-
-    # get paginated result of repos
-    orgRepos = g.get_organization(inputOrg).get_repos()
-
-    # threadpool setup and launch
-    try:
-        threadPool = concurrent.futures.ThreadPoolExecutor(MAX_WORKERS)
-        threadPool.map(exploreLicenses, orgRepos)
-    except Exception:
-        logging.error("Error in thread pool execution.")
-        return False
-    finally:
-        # Shutdown waits for all threads to finish by default
-        threadPool.shutdown()
-
-    return True
+def signal_handler(sig, frame):
+    print("Catched SIGINT, closing...")
+    exit(-1)
 
 
-def exploreLicenses(repository: str):
-    """Exploring the repository (input) and printing the license.name"""
-    try:
-        license = repository.get_license()
-        print(repository.name + "," + license.license.name)
-    except Exception:
-        print(repository.name + "," + "Empty")
+if __name__ == "__main__":
+    # general configs
+    signal.signal(signal.SIGINT, signal_handler)
+    logging.basicConfig(level=logging.INFO)
+
+    ap = argparse.ArgumentParser()
+    # run as -d orgName
+    ap.add_argument(
+        "-d",
+        "--dryrun",
+        required=False,
+        help="Dry Run: nothing will be persisted. Org name needed.",
+    )
+    # run as -o orgName
+    ap.add_argument(
+        "-o",
+        "--crawl-org",
+        required=False,
+        help="Complete crawl of the org with persistency. Org name needed.",
+    )
+    # run as -l fileWithList
+    ap.add_argument(
+        "-l",
+        "--crawl-list",
+        required=False,
+        help="Complete crawl of the list with persistency. Input file needed",
+    )
+
+    args = ap.parse_args()
+    if not len(sys.argv) > 1:
+        logging.info("No arguments provided, check --help.")
+        sys.exit(-1)
+
+    if args.dryrun:
+        logging.info("Performing dry run on " + args.dryrun)
+        if not dry_run(args.dryrun):
+            sys.exit(-1)
+
+    sys.exit(0)

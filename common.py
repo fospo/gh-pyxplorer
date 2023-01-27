@@ -10,7 +10,6 @@ def dry_run(inputOrg: str) -> bool:
     GH_TOKEN = os.getenv("GH_TOKEN")
     g = Github(GH_TOKEN)
 
-    # threadpool setup and launch
     try:
         # get paginated result of repos
         orgRepos = g.get_organization(inputOrg).get_repos()

@@ -10,15 +10,16 @@ def dry_run(inputOrg: str) -> bool:
     GH_TOKEN = os.getenv("GH_TOKEN")
     g = Github(GH_TOKEN)
 
-    # get paginated result of repos
-    orgRepos = g.get_organization(inputOrg).get_repos()
-
     # threadpool setup and launch
     try:
+        # get paginated result of repos
+        orgRepos = g.get_organization(inputOrg).get_repos()
+
+        # handle a pool of thread
         threadPool = concurrent.futures.ThreadPoolExecutor(MAX_WORKERS)
         threadPool.map(exploreLicenses, orgRepos)
-    except Exception:
-        logging.error("Error in thread pool execution.")
+    except Exception as e:
+        logging.error("Error in thread pool execution. Check " + e)
         return False
     finally:
         # Shutdown waits for all threads to finish by default

@@ -1,8 +1,7 @@
 import os
 import logging
-from github import Github
-from github import Repository
 import concurrent.futures
+from github import Github, Repository
 
 
 def dry_run(inputOrg: str) -> bool:

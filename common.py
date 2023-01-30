@@ -1,6 +1,7 @@
 import os
 import logging
 from github import Github
+from github import Repository
 import concurrent.futures
 
 
@@ -27,7 +28,7 @@ def dry_run(inputOrg: str) -> bool:
     return True
 
 
-def explore_licenses(repository: str):
+def explore_licenses(repository: Repository.Repository):
     """Exploring the repository (input) and printing the license.name"""
     licenseName = "Empty"
     try:
@@ -40,8 +41,8 @@ def explore_licenses(repository: str):
         print(repository.name + "," + licenseName)
 
 
-def check_other_license_names(repository):
-    """Heuristic: if I get 404 on get_license, let's dig a bit deeper
+def check_other_license_names(repository: Repository.Repository) -> str:
+    """Heuristic: if I get 404 on get_license, let's dig a bit deeper.
     There may be some files other than `LICENSE.md` or `LICENSE` that fit
     the license definition. Let's find out"""
 

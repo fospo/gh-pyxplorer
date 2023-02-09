@@ -8,15 +8,20 @@ def dry_run(inputOrg: str) -> bool:
     """Working just on GitHub for the moment"""
     MAX_WORKERS = 10
     GH_TOKEN = os.getenv("GH_TOKEN")
+    if GH_TOKEN is None:
+        logging.error("GH_TOKEN is not set. Check your env variables.")
+        return False
     g = Github(GH_TOKEN)
 
     # get paginated result of repos
+    # this call should be in a try catch block
     orgRepos = g.get_organization(inputOrg).get_repos()
 
     try:
         # handle a pool of thread
         threadPool = concurrent.futures.ThreadPoolExecutor(MAX_WORKERS)
-        threadPool.map(explore_licenses, orgRepos)
+        for results in threadPool.map(explore_licenses, orgRepos):
+            print(results)
     except Exception as e:
         logging.error("Error in thread pool execution. Check " + repr(e))
         return False
@@ -37,7 +42,7 @@ def explore_licenses(repository: Repository.Repository):
         # if repoLicense is empty, exception is raised
         licenseName = check_other_license_names(repository)
     finally:
-        print(repository.name + "," + licenseName)
+        return repository.name + "," + licenseName
 
 
 def check_other_license_names(repository: Repository.Repository) -> str:
@@ -45,7 +50,7 @@ def check_other_license_names(repository: Repository.Repository) -> str:
     There may be some files other than `LICENSE.md` or `LICENSE` that fit
     the license definition. Let's find out"""
 
-    licenseNameList = ["license", "licenza"]
+    licenseNameList = ["license", "licenza", "EUPL", "GPL"]
 
     # Get all root repository contents to find a match with possible names
     for content in repository.get_contents(""):
@@ -53,3 +58,22 @@ def check_other_license_names(repository: Repository.Repository) -> str:
             if license in content.path.lower():
                 return content.path
     return "Empty"
+
+
+def group_by_project(fileLines):
+    """ Grouping the list of lines by project name."""
+    dictionary = {}
+
+    if fileLines:
+        # Line in the form of "0, org/repo-name"
+        for index, line in enumerate(fileLines):
+            if line:
+                name = line.split('/')[1].split(',')[0].strip()
+                tok = name.split('-')[0]
+
+                if tok not in dictionary.keys():
+                    dictionary[tok] = [name]
+                else:
+                    dictionary[tok].append(name)
+
+    return dictionary

@@ -8,20 +8,28 @@ def dry_run(inputOrg: str) -> bool:
     """Working just on GitHub for the moment"""
     MAX_WORKERS = 10
     GH_TOKEN = os.getenv("GH_TOKEN")
-    if GH_TOKEN is None:
+    if not GH_TOKEN:
         logging.error("GH_TOKEN is not set. Check your env variables.")
         return False
     g = Github(GH_TOKEN)
 
     # get paginated result of repos
-    # this call should be in a try catch block
-    orgRepos = g.get_organization(inputOrg).get_repos()
+    try:
+        org = g.get_organization(inputOrg)
+        repos = org.get_repos()
+    except Exception as e:
+        logging.error(f"Error in getting repos: {e}")
+        return False
+
+    if not repos:
+        logging.error("No repos found for the org.")
+        return False
 
     try:
         # handle a pool of thread
-        threadPool = concurrent.futures.ThreadPoolExecutor(MAX_WORKERS)
-        for results in threadPool.map(explore_licenses, orgRepos):
-            print(results)
+        with concurrent.futures.ThreadPoolExecutor(MAX_WORKERS) as threadPool:
+            for results in threadPool.map(explore_licenses, repos):
+                print(results)
     except Exception as e:
         logging.error("Error in thread pool execution. Check " + repr(e))
         return False
@@ -33,16 +41,13 @@ def dry_run(inputOrg: str) -> bool:
 
 
 def explore_licenses(repository: Repository.Repository):
-    """Exploring the repository (input) and printing the license.name"""
-    licenseName = "Empty"
+    """Exploring the repository (input) and returning the license name"""
     try:
-        repoLicense = repository.get_license()
-        licenseName = repoLicense.license.name
+        license = repository.get_license().license.name
     except Exception:
-        # if repoLicense is empty, exception is raised
-        licenseName = check_other_license_names(repository)
-    finally:
-        return repository.name + "," + licenseName
+        license = check_other_license_names(repository)
+
+    return f"{repository.name},{license}"
 
 
 def check_other_license_names(repository: Repository.Repository) -> str:

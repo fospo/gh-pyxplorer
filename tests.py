@@ -1,5 +1,6 @@
 import unittest
-from common import explore_licenses, group_by_project
+from unittest.mock import patch, MagicMock
+from common import explore_licenses, group_by_project, check_other_license_names
 from github import Github
 
 
@@ -59,6 +60,13 @@ class TestGroupByProject(unittest.TestCase):
 class TestCommon(unittest.TestCase):
     def test_explore_licenses(self):
         repo = Github().get_repo("pagopa/pagopa-api")
+        expected = "pagopa-api,MIT License"
+        self.assertEqual(explore_licenses(repo), expected)
+
+    @patch("github.Repository.Repository.get_license")
+    def test_explore_licenses_mocked(self, mock_get_license):
+        repo = Github().get_repo("pagopa/pagopa-api")
+        mock_get_license.return_value.license.name = "MIT License"
         expected = "pagopa-api,MIT License"
         self.assertEqual(explore_licenses(repo), expected)
 

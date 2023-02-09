@@ -1,6 +1,6 @@
 import unittest
 from common import explore_licenses, group_by_project
-from github import Github, Repository
+from github import Github
 
 
 # write test for group_by_project function
@@ -16,8 +16,10 @@ class TestGroupByProject(unittest.TestCase):
         self.assertEqual(group_by_project(lines), expected)
 
     def test_group_by_project(self):
-        lines = ["0, prova/prova1-etc", "1, prova/prova1-bbb", "2, prova/prova3-etc"]
-        expected = {"prova1": ["prova1-etc", "prova1-bbb"], "prova3": ["prova3-etc"]}
+        lines = ["0, prova/prova1-etc", "1, prova/prova1-bbb", 
+            "2, prova/prova3-etc"]
+        expected = {"prova1": ["prova1-etc", "prova1-bbb"], 
+            "prova3": ["prova3-etc"]}
         self.assertEqual(group_by_project(lines), expected)
 
     def test_group_by_project_with_empty_line(self):
@@ -27,7 +29,8 @@ class TestGroupByProject(unittest.TestCase):
             "2, prova/prova3-etc",
             "",
         ]
-        expected = {"prova1": ["prova1-etc", "prova1-bbb"], "prova3": ["prova3-etc"]}
+        expected = {"prova1": ["prova1-etc", "prova1-bbb"], 
+            "prova3": ["prova3-etc"]}
         self.assertEqual(group_by_project(lines), expected)
 
     def test_group_by_project_with_empty_line_and_spaces(self):
@@ -38,7 +41,8 @@ class TestGroupByProject(unittest.TestCase):
             "",
             "",
         ]
-        expected = {"prova1": ["prova1-etc", "prova1-bbb"], "prova3": ["prova3-etc"]}
+        expected = {"prova1": ["prova1-etc", "prova1-bbb"], 
+            "prova3": ["prova3-etc"]}
         self.assertEqual(group_by_project(lines), expected)
 
 

@@ -1,6 +1,6 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from common import explore_licenses, group_by_project, check_other_license_names
+from unittest.mock import patch
+from common import explore_licenses, group_by_project
 from github import Github
 
 

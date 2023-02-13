@@ -26,9 +26,8 @@ def dry_run(inputOrg: str) -> bool:
         return False
 
     try:
-        # handle a pool of thread
         with concurrent.futures.ThreadPoolExecutor(MAX_WORKERS) as threadPool:
-            for results in threadPool.map(explore_licenses, repos):
+            for results in threadPool.map(explore_repository, repos):
                 print(results)
     except Exception as e:
         logging.error("Error in thread pool execution. Check " + repr(e))
@@ -39,6 +38,11 @@ def dry_run(inputOrg: str) -> bool:
 
     return True
 
+def explore_repository(repository: Repository.Repository):
+    """Exploring the repository (input) and returning some information about it"""
+    repository_name = repository.name
+    license_name = explore_licenses(repository)
+    return f"{repository_name},{license_name}"
 
 def explore_licenses(repository: Repository.Repository):
     """Exploring the repository (input) and returning the license name"""
@@ -47,7 +51,7 @@ def explore_licenses(repository: Repository.Repository):
     except Exception:
         license = check_other_license_names(repository)
 
-    return f"{repository.name},{license}"
+    return license
 
 
 def check_other_license_names(repository: Repository.Repository) -> str:

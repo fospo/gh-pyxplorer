@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from common import explore_licenses, group_by_project
+from common import check_licenses, group_by_project
 from github import Github
 
 
@@ -58,17 +58,17 @@ class TestGroupByProject(unittest.TestCase):
 
 # test for common.py
 class TestCommon(unittest.TestCase):
-    def test_explore_licenses(self):
+    def test_check_licenses(self):
         repo = Github().get_repo("libremente/github_pyxplorer")
         expected = "MIT License"
-        self.assertEqual(explore_licenses(repo), expected)
+        self.assertEqual(check_licenses(repo), expected)
 
     @patch("github.Repository.Repository.get_license")
-    def test_explore_licenses_mocked(self, mock_get_license):
+    def test_check_licenses_mocked(self, mock_get_license):
         repo = Github().get_repo("libremente/github_pyxplorer")
         mock_get_license.return_value.license.name = "MIT License"
         expected = "MIT License"
-        self.assertEqual(explore_licenses(repo), expected)
+        self.assertEqual(check_licenses(repo), expected)
 
 
 if __name__ == "__main__":

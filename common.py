@@ -38,13 +38,15 @@ def dry_run(inputOrg: str) -> bool:
 
     return True
 
-def explore_repository(repository: Repository.Repository):
-    """Exploring the repository (input) and returning some information about it"""
-    repository_name = repository.name
-    license_name = explore_licenses(repository)
-    return f"{repository_name},{license_name}"
 
-def explore_licenses(repository: Repository.Repository):
+def explore_repository(repository: Repository.Repository):
+    """Exploring the repository (input)"""
+    license_name = check_licenses(repository)
+    language = repository.language
+    return f"{repository.name},{license_name},{language}"
+
+
+def check_licenses(repository: Repository.Repository):
     """Exploring the repository (input) and returning the license name"""
     try:
         license = repository.get_license().license.name
@@ -70,15 +72,15 @@ def check_other_license_names(repository: Repository.Repository) -> str:
 
 
 def group_by_project(fileLines):
-    """ Grouping the list of lines by project name."""
+    """Grouping the list of lines by project name."""
     dictionary = {}
 
     if fileLines:
         # Line in the form of "0, org/repo-name"
         for index, line in enumerate(fileLines):
             if line:
-                name = line.split('/')[1].split(',')[0].strip()
-                tok = name.split('-')[0]
+                name = line.split("/")[1].split(",")[0].strip()
+                tok = name.split("-")[0]
 
                 if tok not in dictionary.keys():
                     dictionary[tok] = [name]

@@ -1,5 +1,9 @@
 # GitHub pyxplorer
 
+Simple interactive program to explore a GitHub organization and 
+extract some information.
+It uses GitHub's API. 
+
 ## Options
 
 1. -d, --dry-run, Dry run option
@@ -19,3 +23,10 @@ export GH_TOKEN=<your_github_token>
 python3 crawler.py -d <organization_name>
 ```
 
+### Testing
+
+Run
+
+```bash
+python3 -m unittest tests.py
+```

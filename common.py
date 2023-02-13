@@ -6,6 +6,8 @@ from github import Github, Repository
 
 def dry_run(inputOrg: str) -> bool:
     """Working just on GitHub for the moment"""
+    """Returns True if everything went fine, False otherwise"""
+    """Prints name, license and primary language of each repo"""
     MAX_WORKERS = 10
     GH_TOKEN = os.getenv("GH_TOKEN")
     if not GH_TOKEN:
@@ -13,7 +15,7 @@ def dry_run(inputOrg: str) -> bool:
         return False
     g = Github(GH_TOKEN)
 
-    # get paginated result of repos
+    # Get paginated result of repos
     try:
         org = g.get_organization(inputOrg)
         repos = org.get_repos()
@@ -28,6 +30,7 @@ def dry_run(inputOrg: str) -> bool:
     try:
         with concurrent.futures.ThreadPoolExecutor(MAX_WORKERS) as threadPool:
             for results in threadPool.map(explore_repository, repos):
+                # Dry run -> just print the results
                 print(results)
     except Exception as e:
         logging.error("Error in thread pool execution. Check " + repr(e))

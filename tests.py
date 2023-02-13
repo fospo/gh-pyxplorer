@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from common import check_licenses, group_by_project
+from common import check_licenses, group_by_project, explore_repository
 from github import Github
 
 
@@ -69,6 +69,11 @@ class TestCommon(unittest.TestCase):
         mock_get_license.return_value.license.name = "MIT License"
         expected = "MIT License"
         self.assertEqual(check_licenses(repo), expected)
+
+    def test_explore_repository(self):
+        repo = Github().get_repo("libremente/github_pyxplorer")
+        expected = "github_pyxplorer,MIT License,Python"
+        self.assertEqual(explore_repository(repo), expected)
 
 
 if __name__ == "__main__":

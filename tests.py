@@ -65,9 +65,9 @@ class TestCommon(unittest.TestCase):
 
     @patch("github.Repository.Repository.get_license")
     def test_explore_licenses_mocked(self, mock_get_license):
-        repo = Github().get_repo("pagopa/pagopa-api")
+        repo = Github().get_repo("libremente/github_pyxplorer")
         mock_get_license.return_value.license.name = "MIT License"
-        expected = "pagopa-api,MIT License"
+        expected = "github_pyxplorer,MIT License"
         self.assertEqual(explore_licenses(repo), expected)
 
 

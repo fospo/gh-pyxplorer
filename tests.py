@@ -59,8 +59,8 @@ class TestGroupByProject(unittest.TestCase):
 # test for common.py
 class TestCommon(unittest.TestCase):
     def test_explore_licenses(self):
-        repo = Github().get_repo("pagopa/pagopa-api")
-        expected = "pagopa-api,MIT License"
+        repo = Github().get_repo("libremente/github_pyxplorer")
+        expected = "github_pyxplorer,MIT License"
         self.assertEqual(explore_licenses(repo), expected)
 
     @patch("github.Repository.Repository.get_license")

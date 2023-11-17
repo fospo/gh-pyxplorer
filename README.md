@@ -1,16 +1,22 @@
 # GitHub pyxplorer
 
-Simple interactive program to explore a GitHub organization and 
-extract some information.
-It uses GitHub's API. 
+You have a GitHub organization and you want to explore it?
+With this simple interactive crawler you can explore a GitHub {organization, repository, or a list of repositories} and 
+extract some insightful information.
+Please note: it uses GitHub's API. 
 
 # Options
 
-### -d, --dry-run, Dry run option
+The crawler accepts the following command-line arguments:
 
-This option allows to perform a dry-run, nothing will be persisted.
-A Github token is needed in order to avoid GH API's rate limit. 
-Pass the organization name after the `-d`. 
+- `-i` or `--input`: Specifies the input type. This should be either 'org' for a GitHub organization, 'repo' for a specific repository, or 'list' for a list of repositories. This argument is **required**.
+
+- `<name>`: The name of the organization, repository or file name containing a list of repositories to explore. This is a positional argument and is **required**.
+
+- `-o` or `--output`: Specifies the output type. This can be 'print' to print the results to the console, or 'file' to write the results to a file. The **default** is '*print*'.
+
+- `-f` or `--fields`: Specifies the fields to include in the output. This should be a space-separated list of field names. The default is 'name license language'.
+
 
 > NOTE: GH heuristics catches if a repo has a license 
 by checking the `LICENSE.md` or `LICENSE` files. Here we are digging a bit 
@@ -18,15 +24,41 @@ deeper in order to see if there are other files that "may" contain licensing
 info in the root of the repo.
 
 
+## How to run
+
 ```bash
 export GH_TOKEN=<your_github_token>
-python3 crawler.py -d <organization_name>
+python3 crawler.py -i org <organization_name> -o print
 ```
 
 #### Output
 
-```bash
+Depending on the type of parameter passed to the `-o` option, the output will be printed to the console or written to a file.
+
+The output is a CSV-like structure with the following fields:
+
+```csv
 repo_name,license,primary_language
+```
+
+In case of file, this is the output (JSON-like):
+
+```json
+{
+    "token_name": {
+        "count": 100,
+        "repos": [
+            {
+                "name": "repo-1-name",
+                "license": "Creative Commons Zero v1.0 Universal",
+                "language": "Python"
+            },
+            {
+                "name": "repo-2-name",
+                "license": "Other",
+                "language": "Python"
+            },
+            {
 ```
 
 #### Testing

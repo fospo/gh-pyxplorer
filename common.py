@@ -121,11 +121,20 @@ def group_by_name(results):
         # Group by based on the name
         repo_name = result.get("name", "")
         tok = repo_name.split("-")[0]  # Split the repo name
+        isPrivate = result.get("private", False)
+
         if tok not in dictionary:
-            dictionary[tok] = {"count": 1, "repos": [result]}
+            dictionary[tok] = {
+                "count": 1,
+                "private-repos": [repo_name] if isPrivate else [],
+                "public-repos": [repo_name] if not isPrivate else [],
+            }
         else:
             dictionary[tok]["count"] += 1
-            dictionary[tok]["repos"].append(result)
+            if isPrivate:
+                dictionary[tok]["private-repos"].append(repo_name)
+            else:
+                dictionary[tok]["public-repos"].append(repo_name)
 
     sorted_dict = dict(
         sorted(dictionary.items(), key=lambda x: x[1]["count"], reverse=True)

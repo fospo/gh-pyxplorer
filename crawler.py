@@ -59,6 +59,10 @@ if __name__ == "__main__":
 
     results = crawl(args.input, args.name)
 
+    if not results:
+        logging.error("No results found. Exiting.")
+        sys.exit(-1)
+
     # Files are always grouped by, if you want a file without grouping, just > file_name
     if args.input in ["org", "list"] and args.output == "file":
         results = group_by_field(results, "name")

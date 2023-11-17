@@ -19,7 +19,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     # 3 possible inputs: org, repo, list
     ap.add_argument(
-        "-i", "--input", required=True, help="Input type: 'org', 'repo', or 'list'."
+        "-i",
+        "--input",
+        required=True,
+        help="Input type: 'org', 'repo', or 'list'."
     )
     # name of the org, repo, or list
     ap.add_argument("name", help="Name of the organization or repository.")
@@ -57,7 +60,7 @@ if __name__ == "__main__":
         logging.error("No results found. Exiting.")
         sys.exit(-1)
 
-    # Files are always grouped by, if you want a file without grouping, just > file_name
+    # Files are always grouped, if you don't want it just > file_name
     if args.input in ["org", "list"] and args.output == "file":
         results = group_by_name(results)
         with open("output.json", "w") as f:

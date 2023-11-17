@@ -31,7 +31,9 @@ def crawl(inputType: str, inputName: str) -> bool:
         elif inputType == "repo":
             repos = [g.get_repo(inputName)]
         elif inputType == "list":
-            repos = [g.get_repo(repo_name) for repo_name in inputName.split(",")]
+            repos = [g.get_repo(repo_name)
+                     for repo_name in inputName.split(",")
+                     ]
         else:
             logging.error("Invalid input type.")
             return False
@@ -89,7 +91,14 @@ def check_other_license_names(repository: Repository.Repository) -> str:
     There may be some files other than `LICENSE.md` or `LICENSE` that fit
     the license definition. Let's find out"""
 
-    licenseNameList = ["license", "licenza", "EUPL", "GPL", "licenza.txt", "license.txt"]
+    licenseNameList = [
+        "license",
+        "licenza",
+        "EUPL",
+        "GPL",
+        "licenza.txt",
+        "license.txt",
+    ]
 
     # Get all root repository contents to find a match with possible names
     for content in repository.get_contents(""):

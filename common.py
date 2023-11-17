@@ -4,34 +4,51 @@ import concurrent.futures
 from github import Github, Repository
 
 
-def dry_run(inputOrg: str) -> bool:
+def get_github_token():
+    """Gets the GitHub token from the environment variables."""
+    GH_TOKEN = os.getenv("GH_TOKEN")
+    if not GH_TOKEN:
+        logging.error("GH_TOKEN is not set. Check your env variables.")
+        return None
+    return GH_TOKEN
+
+
+def crawl(inputType: str, inputName: str) -> bool:
     """Working just on GitHub for the moment"""
     """Returns True if everything went fine, False otherwise"""
     """Prints name, license and primary language of each repo"""
     MAX_WORKERS = 10
-    GH_TOKEN = os.getenv("GH_TOKEN")
-    if not GH_TOKEN:
-        logging.error("GH_TOKEN is not set. Check your env variables.")
+    GH_TOKEN = get_github_token()
+    if GH_TOKEN is None:
         return False
     g = Github(GH_TOKEN)
 
-    # Get paginated result of repos
+    # 3 input possibilities: org, repo, list
     try:
-        org = g.get_organization(inputOrg)
-        repos = org.get_repos()
+        if inputType == "org":
+            org = g.get_organization(inputName)
+            repos = org.get_repos()
+        elif inputType == "repo":
+            repos = [g.get_repo(inputName)]
+        elif inputType == "list":
+            repos = [g.get_repo(repo_name) for repo_name in inputName.split(",")]
+        else:
+            logging.error("Invalid input type.")
+            return False
     except Exception as e:
         logging.error(f"Error in getting repos: {e}")
         return False
 
     if not repos:
-        logging.error("No repos found for the org.")
+        logging.error("No repos found for the input.")
         return False
 
+    results = []
     try:
         with concurrent.futures.ThreadPoolExecutor(MAX_WORKERS) as threadPool:
-            for results in threadPool.map(explore_repository, repos):
+            for result in threadPool.map(explore_repository, repos):
                 # Dry run -> just print the results
-                print(results)
+                results.append(result)
     except Exception as e:
         logging.error("Error in thread pool execution. Check " + repr(e))
         return False
@@ -39,14 +56,21 @@ def dry_run(inputOrg: str) -> bool:
         # Shutdown waits for all threads to finish by default
         threadPool.shutdown()
 
-    return True
+    return results
 
 
 def explore_repository(repository: Repository.Repository):
     """Exploring the repository (input)"""
-    license_name = check_licenses(repository)
-    language = repository.language
-    return f"{repository.name},{license_name},{language}"
+    if repository.size == 0:
+        logging.warning(f"Repository {repository.name} is empty. Skipping.")
+        return {"name": repository.name, "isEmpty": True}
+
+    repo_info = {
+        "name": repository.name,
+        "license": check_licenses(repository),
+        "language": repository.language,
+    }
+    return repo_info
 
 
 def check_licenses(repository: Repository.Repository):
@@ -71,23 +95,37 @@ def check_other_license_names(repository: Repository.Repository) -> str:
         for license in licenseNameList:
             if license in content.path.lower():
                 return content.path
-    return "Empty"
+    return None
 
 
-def group_by_project(fileLines):
-    """Grouping the list of lines by project name."""
+def group_by_field(results, field):
+    """Grouping the list of results by the first token of the project name."""
     dictionary = {}
 
-    if fileLines:
-        # Line in the form of "0, org/repo-name"
-        for index, line in enumerate(fileLines):
-            if line:
-                name = line.split("/")[1].split(",")[0].strip()
-                tok = name.split("-")[0]
+    for result in results:
+        if result.get("isEmpty", False):
+            continue  # Skip empty repositories
 
-                if tok not in dictionary.keys():
-                    dictionary[tok] = [name]
-                else:
-                    dictionary[tok].append(name)
+        repo_name = result.get(field, "")
+        tok = repo_name.split("-")[0]  # Split the repo name
+        if tok not in dictionary:
+            dictionary[tok] = {"count": 1, "repos": [result]}
+        else:
+            dictionary[tok]["count"] += 1
+            dictionary[tok]["repos"].append(result)
 
-    return dictionary
+    sorted_dict = dict(
+        sorted(dictionary.items(), key=lambda x: x[1]["count"], reverse=True)
+    )
+
+    return sorted_dict
+
+
+def print_details(results, fields):
+    """Print the results"""
+    for result in results:
+        if result.get("isEmpty", False):
+            print(f"{result['name']} is empty.")
+        else:
+            details = [f"{result.get(field, 'N/A')}" for field in fields]
+            print(",".join(details))

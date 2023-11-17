@@ -2,7 +2,8 @@ import argparse
 import sys
 import logging
 import signal
-from common import dry_run
+import json
+from common import crawl, print_details, group_by_field
 
 
 def signal_handler(sig, frame):
@@ -16,36 +17,54 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     ap = argparse.ArgumentParser()
-    # run as -d orgName
+    # 3 possible inputs: org, repo, list
     ap.add_argument(
-        "-d",
-        "--dryrun",
-        required=False,
-        help="Dry Run: nothing will be persisted. Org name needed.",
+        "-i", "--input", required=True, help="Input type: 'org', 'repo', or 'list'."
     )
-    # run as -o orgName
+    # name of the org, repo, or list
+    ap.add_argument(
+        "-n",
+        "--name",
+        required=True,
+        help="Name of the organization, repository, or list.",
+    )
+    # Output expected: print at stdout, file, db [NOT IMPLEMENTED]
     ap.add_argument(
         "-o",
-        "--crawl-org",
+        "--output",
         required=False,
-        help="Complete crawl of the org with persistency. Org name needed.",
+        default="print",
+        help="Output type: 'print' or 'db'. By default, prints to stdout.",
     )
-    # run as -l fileWithList
+
+    # Fields to print
     ap.add_argument(
-        "-l",
-        "--crawl-list",
+        "-f",
+        "--fields",
         required=False,
-        help="Complete crawl of the list with persistency. Input file needed",
+        nargs="+",
+        default=["name", "license", "language"],
+        help="Fields to print: 'name', 'license', 'authors', etc.",
     )
 
     args = ap.parse_args()
-    if not len(sys.argv) > 1:
-        logging.info("No arguments provided, check --help.")
+    if args.input not in ["org", "repo", "list"]:
+        logging.error("Invalid input type. Check --help.")
         sys.exit(-1)
 
-    if args.dryrun:
-        logging.info("Performing dry run on " + args.dryrun)
-        if not dry_run(args.dryrun):
-            sys.exit(-1)
+    # TODO: implement db and file outputs
+    if args.output not in ["print", "file"]:
+        logging.error("Invalid output type. Check --help.")
+        sys.exit(-1)
 
-    sys.exit(0)
+    results = crawl(args.input, args.name)
+
+    # Files are always grouped by, if you want a file without grouping, just > file_name
+    if args.input in ["org", "list"] and args.output == "file":
+        results = group_by_field(results, "name")
+        with open("output.json", "w") as f:
+            json.dump(results, f, indent=4)
+    else:
+        print_details(results, args.fields)
+
+    sys.exit(-1)

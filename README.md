@@ -45,20 +45,22 @@ In case of file, this is the output (JSON-like):
 
 ```json
 {
-    "token_name": {
-        "count": 100,
-        "repos": [
-            {
-                "name": "repo-1-name",
-                "license": "Creative Commons Zero v1.0 Universal",
-                "language": "Python"
-            },
-            {
-                "name": "repo-2-name",
-                "license": "Other",
-                "language": "Python"
-            },
-            {
+    {
+    "nome del gruppo": {
+        "count": numero totale di repository per il gruppo,
+        "private-repos": [
+            "nome del repository privato 1",
+            "nome del repository privato 2",
+            ...
+        ],
+        "public-repos": [
+            "nome del repository pubblico 1",
+            "nome del repository pubblico 2",
+            ...
+        ]
+    },
+    ...
+}
 ```
 
 #### Testing

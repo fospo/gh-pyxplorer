@@ -44,10 +44,10 @@ def crawl(inputType: str, inputName: str) -> bool:
         return False
 
     results = []
+    # ThreadPool to parallelize the exploration. Output in a thread safe list
     try:
         with concurrent.futures.ThreadPoolExecutor(MAX_WORKERS) as threadPool:
             for result in threadPool.map(explore_repository, repos):
-                # Dry run -> just print the results
                 results.append(result)
     except Exception as e:
         logging.error("Error in thread pool execution. Check " + repr(e))
@@ -65,6 +65,7 @@ def explore_repository(repository: Repository.Repository):
         logging.warning(f"Repository {repository.name} is empty. Skipping.")
         return {"name": repository.name, "isEmpty": True}
 
+    # Data structure
     repo_info = {
         "name": repository.name,
         "license": check_licenses(repository),
@@ -88,7 +89,7 @@ def check_other_license_names(repository: Repository.Repository) -> str:
     There may be some files other than `LICENSE.md` or `LICENSE` that fit
     the license definition. Let's find out"""
 
-    licenseNameList = ["license", "licenza", "EUPL", "GPL"]
+    licenseNameList = ["license", "licenza", "EUPL", "GPL", "licenza.txt", "license.txt"]
 
     # Get all root repository contents to find a match with possible names
     for content in repository.get_contents(""):
@@ -98,15 +99,18 @@ def check_other_license_names(repository: Repository.Repository) -> str:
     return None
 
 
-def group_by_field(results, field):
-    """Grouping the list of results by the first token of the project name."""
+def group_by_name(results):
+    """Grouping the list of results by the first token of the project name
+    Example: my-app -> my, my-app-2 -> my, my-app-3 -> my, so the group is my
+    and the count is 3"""
     dictionary = {}
 
     for result in results:
         if result.get("isEmpty", False):
             continue  # Skip empty repositories
 
-        repo_name = result.get(field, "")
+        # Group by based on the name
+        repo_name = result.get("name", "")
         tok = repo_name.split("-")[0]  # Split the repo name
         if tok not in dictionary:
             dictionary[tok] = {"count": 1, "repos": [result]}

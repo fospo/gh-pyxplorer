@@ -3,7 +3,7 @@ import sys
 import logging
 import signal
 import json
-from common import crawl, print_details, group_by_field
+from common import crawl, print_details, group_by_name
 
 
 def signal_handler(sig, frame):
@@ -22,12 +22,7 @@ if __name__ == "__main__":
         "-i", "--input", required=True, help="Input type: 'org', 'repo', or 'list'."
     )
     # name of the org, repo, or list
-    ap.add_argument(
-        "-n",
-        "--name",
-        required=True,
-        help="Name of the organization, repository, or list.",
-    )
+    ap.add_argument("name", help="Name of the organization or repository.")
     # Output expected: print at stdout, file, db [NOT IMPLEMENTED]
     ap.add_argument(
         "-o",
@@ -58,14 +53,13 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     results = crawl(args.input, args.name)
-
     if not results:
         logging.error("No results found. Exiting.")
         sys.exit(-1)
 
     # Files are always grouped by, if you want a file without grouping, just > file_name
     if args.input in ["org", "list"] and args.output == "file":
-        results = group_by_field(results, "name")
+        results = group_by_name(results)
         with open("output.json", "w") as f:
             json.dump(results, f, indent=4)
     else:

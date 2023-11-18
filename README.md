@@ -14,6 +14,14 @@ Regular scans of your repositories are essential for maintaining compliance and 
 
 # How to run
 
+### Install
+```bash
+pip3 install -r requirements.txt
+```
+
+
+### Launch
+
 ```bash
 export GH_TOKEN=<your_github_token>
 python3 crawler.py -i org <organization_name> -o print

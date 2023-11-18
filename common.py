@@ -1,27 +1,25 @@
 import os
+import sys
 import logging
 import concurrent.futures
 from github import Github, Repository
+from typing import Dict, Optional
 
 
 def get_github_token():
     """Gets the GitHub token from the environment variables."""
     GH_TOKEN = os.getenv("GH_TOKEN")
     if not GH_TOKEN:
-        logging.error("GH_TOKEN is not set. Check your env variables.")
-        return None
+        sys.exit("Error: GH_TOKEN is not set. Check your env variables.")
     return GH_TOKEN
 
 
-def crawl(inputType: str, inputName: str) -> bool:
+def crawl(inputType: str, inputName: str) -> Optional[Dict]:
     """Working just on GitHub for the moment"""
-    """Returns True if everything went fine, False otherwise"""
-    """Prints name, license and primary language of each repo"""
+    """Returns a data structure with the results"""
+    # TODO make this configurable
     MAX_WORKERS = 10
-    GH_TOKEN = get_github_token()
-    if GH_TOKEN is None:
-        return False
-    g = Github(GH_TOKEN)
+    g = Github(get_github_token())
 
     # 3 input possibilities: org, repo, list
     try:

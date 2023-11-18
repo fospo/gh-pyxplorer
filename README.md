@@ -45,17 +45,16 @@ In case of file, this is the output (JSON-like):
 
 ```json
 {
-    {
-    "nome del gruppo": {
-        "count": numero totale di repository per il gruppo,
+    "group name": {
+        "count": total number of repositories for the group,
         "private-repos": [
-            "nome del repository privato 1",
-            "nome del repository privato 2",
+            "name of private repository 1",
+            "name of private repository 2",
             ...
         ],
         "public-repos": [
-            "nome del repository pubblico 1",
-            "nome del repository pubblico 2",
+            "name of public repository 1",
+            "name of public repository 2",
             ...
         ]
     },

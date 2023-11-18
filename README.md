@@ -46,7 +46,7 @@ The crawler accepts the following command-line arguments:
     * `private` for private repositories [NOT IMPLEMENTED YET],
     * `public` for public repositories [NOT IMPLEMENTED YET]
 
-Ad esempio, per avere in output solo il campo `name` e `license`:
+For example, if you want just the `name` and `license` fields as output:
 
 ```bash
 python3 crawler.py -i org <organization_name> -o print -f name license

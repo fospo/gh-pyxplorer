@@ -101,6 +101,10 @@ def check_other_license_names(repository: Repository.Repository) -> str:
         "license.txt",
     ]
 
+    contents = repository.get_contents("")
+    if contents is None:
+        return None
+
     # Get all root repository contents to find a match with possible names
     for content in repository.get_contents(""):
         for license in licenseNameList:

@@ -37,7 +37,7 @@ class TestGroupByName(unittest.TestCase):
 
 class TestCommonFunctions(unittest.TestCase):
     def test_check_licenses(self):
-        # Mock a repository object
+        # Mock an OK repository object
         repository = Mock()
         repository.get_license.return_value.license.name = "MIT License"
 
@@ -51,6 +51,33 @@ class TestCommonFunctions(unittest.TestCase):
         ]
 
         self.assertEqual(check_other_license_names(repository), "license.txt")
+
+    def test_check_licenses_no_license(self):
+        # Mock a repository object with no license
+        repository = Mock()
+        repository.get_license.return_value = None
+        repository.get_contents.return_value = []
+
+        self.assertEqual(check_licenses(repository), None)
+
+    def test_check_other_license_names_no_license_file(self):
+        # Mock a repository object with no license file
+        repository = Mock()
+        repository.get_contents.return_value = [
+            Mock(path="README.md"),
+        ]
+
+        self.assertEqual(check_other_license_names(repository), None)
+
+    def test_check_other_license_names_multiple_license_files(self):
+        # Mock a repository object with multiple license files
+        repository = Mock()
+        repository.get_contents.return_value = [
+            Mock(path="LICENSE"),
+            Mock(path="license.txt"),
+        ]
+
+        self.assertEqual(check_other_license_names(repository), "LICENSE")
 
 
 if __name__ == "__main__":

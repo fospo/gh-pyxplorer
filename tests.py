@@ -1,5 +1,6 @@
 import unittest
-from common import group_by_name  # Replace with your actual module name
+from unittest.mock import Mock
+from common import group_by_name, check_licenses, check_other_license_names
 
 
 class TestGroupByName(unittest.TestCase):
@@ -32,6 +33,24 @@ class TestGroupByName(unittest.TestCase):
         }
 
         self.assertEqual(group_by_name(results), expected_output)
+
+
+class TestCommonFunctions(unittest.TestCase):
+    def test_check_licenses(self):
+        # Mock a repository object
+        repository = Mock()
+        repository.get_license.return_value.license.name = "MIT License"
+
+        self.assertEqual(check_licenses(repository), "MIT License")
+
+    def test_check_other_license_names(self):
+        repository = Mock()
+        repository.get_contents.return_value = [
+            Mock(path="license.txt"),
+            Mock(path="README.md"),
+        ]
+
+        self.assertEqual(check_other_license_names(repository), "license.txt")
 
 
 if __name__ == "__main__":

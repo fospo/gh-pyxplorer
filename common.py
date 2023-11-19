@@ -149,8 +149,6 @@ def group_by_name(results):
 def print_details(results, fields):
     """Print the results"""
     for result in results:
-        if result.get("isEmpty", False):
-            print(f"{result['name']} is empty.")
-        else:
+        if not result.get("isEmpty", False):
             details = [f"{result.get(field, 'N/A')}" for field in fields]
             print(",".join(details))

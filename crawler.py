@@ -68,4 +68,4 @@ if __name__ == "__main__":
     else:
         print_details(results, args.fields)
 
-    sys.exit(-1)
+    sys.exit(0)

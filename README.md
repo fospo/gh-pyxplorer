@@ -53,6 +53,7 @@ The crawler accepts the following command-line arguments:
     * `language` for the repository's primary language,
     * `private` for private repositories [NOT IMPLEMENTED YET],
     * `public` for public repositories [NOT IMPLEMENTED YET]
+    * `archived` for archived repositories
 
 For example, if you want just the `name` and `license` fields as output:
 

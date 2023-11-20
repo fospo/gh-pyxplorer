@@ -71,6 +71,7 @@ def explore_repository(repository: Repository.Repository):
         "license": check_licenses(repository),
         "language": repository.language,
         "private": repository.private,
+        "archived": repository.archived,
     }
     return repo_info
 

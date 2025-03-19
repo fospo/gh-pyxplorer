@@ -82,20 +82,30 @@ In case of file, this is the output (JSON-like):
 
 ```json
 {
-    "group name": {
+    "group_name": {
         "count": total number of repositories for the group,
         "private-repos": [
-            "name of private repository 1",
-            "name of private repository 2",
-            ...
+            {
+                "name": "private-repo1",
+                "html_url": "https://github.com/org/private-repo1",
+                "license": null,
+                "language": "Python",
+                "archived": false
+            }
         ],
         "public-repos": [
-            "name of public repository 1",
-            "name of public repository 2",
-            ...
+            {
+                "name": "public-repo1",
+                "html_url": "https://github.com/org/public-repo1",
+                "license": {
+                    "spdx_id": "MIT",
+                    "name": "MIT License"
+                },
+                "language": "JavaScript",
+                "archived": false
+            }
         ]
-    },
-    ...
+    }
 }
 ```
 

@@ -6,10 +6,39 @@ from common import group_by_name, check_licenses, check_other_license_names
 class TestGroupByName(unittest.TestCase):
     def test_group_by_name(self):
         results = [
-            {"name": "test-repo1", "private": True, "html_url": "http://example.com/test-repo1", "license": None, "language": "Python", "archived": False},
-            {"name": "test-repo2", "private": True, "html_url": "http://example.com/test-repo2", "license": {"spdx_id": "MIT", "name": "MIT License"}, "language": "Python", "archived": False},
-            {"name": "test-repo3", "private": False, "html_url": "http://example.com/test-repo3", "license": None, "language": "JavaScript", "archived": False},
-            {"name": "another-repo", "private": False, "html_url": "http://example.com/another-repo", "license": {"spdx_id": "Apache-2.0", "name": "Apache License 2.0"}, "language": "Go", "archived": False},
+            {
+                "name": "test-repo1",
+                "private": True,
+                "html_url": "http://example.com/test-repo1",
+                "license": None,
+                "language": "Python",
+                "archived": False,
+            },
+            {
+                "name": "test-repo2",
+                "private": True,
+                "html_url": "http://example.com/test-repo2",
+                "license": {"spdx_id": "MIT", "name": "MIT License"},
+                "language": "Python",
+                "archived": False,
+            },
+            {
+                "name": "test-repo3",
+                "private": False,
+                "html_url": "http://example.com/test-repo3",
+                "license": None,
+                "language": "JavaScript",
+                "archived": False,
+            },
+            {
+                "name": "another-repo",
+                "private": False,
+                "html_url": "http://example.com/another-repo",
+                "license": {"spdx_id": "Apache-2.0",
+                            "name": "Apache License 2.0"},
+                "language": "Go",
+                "archived": False,
+            },
         ]
 
         expected_output = {
@@ -48,7 +77,10 @@ class TestGroupByName(unittest.TestCase):
                     {
                         "name": "another-repo",
                         "html_url": "http://example.com/another-repo",
-                        "license": {"spdx_id": "Apache-2.0", "name": "Apache License 2.0"},
+                        "license": {
+                            "spdx_id": "Apache-2.0",
+                            "name": "Apache License 2.0",
+                        },
                         "language": "Go",
                         "archived": False,
                     },
@@ -102,6 +134,7 @@ class TestCommonFunctions(unittest.TestCase):
         ]
 
         self.assertEqual(check_other_license_names(repository), "LICENSE")
+
 
 if __name__ == "__main__":
     unittest.main()

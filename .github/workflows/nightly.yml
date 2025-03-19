@@ -1,0 +1,34 @@
+name: Nightly GitHub pyxplorer run
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # Runs every night at midnight UTC
+  workflow_dispatch:      # Allows manual trigger
+
+jobs:
+  crawler:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run GitHub pyxplorer and redirect CSV output
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        id: run_crawler
+        run: |
+          # Use the repository owner as the org name
+          output=$(python3 crawler.py -i org "${{ github.repository_owner }}" -o print -f name license language)
+          # Print output for logging purposes
+          echo "$output"
+          # Append output to the GitHub Actions summary page
+          echo "$output" >> $GITHUB_STEP_SUMMARY

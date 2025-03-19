@@ -18,7 +18,7 @@ def crawl(inputType: str, inputName: str) -> Optional[Dict]:
     """Working just on GitHub for the moment"""
     """Returns a data structure with the results"""
     # TODO make this configurable
-    MAX_WORKERS = 10
+    MAX_WORKERS = 5
     g = Github(get_github_token())
 
     # 3 input possibilities: org, repo, list
@@ -68,6 +68,7 @@ def explore_repository(repository: Repository.Repository):
     # Data structure
     repo_info = {
         "name": repository.name,
+        "html_url": repository.html_url,
         "license": check_licenses(repository),
         "language": repository.language,
         "private": repository.private,
@@ -127,18 +128,30 @@ def group_by_name(results):
         tok = repo_name.split("-")[0]  # Split the repo name
         isPrivate = result.get("private", False)
 
+        # Build the full repository object to be stored
+        repo_object = {
+            "name": repo_name,
+            "html_url": result.get("html_url"),
+            "license": result.get("license"),
+            "language": result.get("language"),
+            "archived": result.get("archived")
+        }
+
+        # Ensure group exists
         if tok not in dictionary:
             dictionary[tok] = {
-                "count": 1,
-                "private-repos": [repo_name] if isPrivate else [],
-                "public-repos": [repo_name] if not isPrivate else [],
+                "count": 0,  # Start at 0 and increment
+                "private-repos": [],
+                "public-repos": []
             }
+
+        dictionary[tok]["count"] += 1  # Increment count
+
+        # Ensure repositories are properly added
+        if isPrivate:
+            dictionary[tok]["private-repos"].append(repo_object)
         else:
-            dictionary[tok]["count"] += 1
-            if isPrivate:
-                dictionary[tok]["private-repos"].append(repo_name)
-            else:
-                dictionary[tok]["public-repos"].append(repo_name)
+            dictionary[tok]["public-repos"].append(repo_object)
 
     sorted_dict = dict(
         sorted(dictionary.items(), key=lambda x: x[1]["count"], reverse=True)

@@ -14,20 +14,33 @@ Regular scans of your repositories are essential for maintaining compliance and 
 
 # How to run
 
+## Continuous Integration
+
+gh-pyxplorer comes handy if you want to "fire and forget it". 
+You can take a look at the workflow in the `.github` folder to get an idea of the strategy.
+
+> [!WARNING]
+> Please note that if you are firing this crawler and printing its results in a public page (e.g., a GitHub Actions Summary Page), ALSO the private repositories will be listed!
+
+
+## Locally
 ### Install
 ```bash
 pip3 install -r requirements.txt
 ```
 
+### Quick Launch
 
-### Launch
+For example, you could launch the crawler like this:
 
 ```bash
 export GH_TOKEN=<your_github_token>
 python3 crawler.py -i org <organization_name> -o print
 ```
 
-## Options
+Please note that there are several options available for the `-i` and `-o` arguments. See below for more details.
+
+### Options
 
 The crawler accepts the following command-line arguments:
 
@@ -35,7 +48,7 @@ The crawler accepts the following command-line arguments:
 
     * `org` for a GitHub organization, 
     * `repo` for a specific repository,
-    * `list` for a list of repositories. 
+    * `list` for a list of repositories (new line separated). 
 
 - `<name>` [**required**]: The name of the organization, repository or file name containing a list of repositories to explore.
 
@@ -43,8 +56,6 @@ The crawler accepts the following command-line arguments:
 
     * `print` [**default**] to print the results to the console, 
     * `file` to write the results to a file. 
-
-
 
 - `-f` or `--fields`: Specifies the fields to include in the output. This should be a space-separated list of field names. The default is **'name license language'**. The available fields are:
 
@@ -65,7 +76,6 @@ python3 crawler.py -i org <organization_name> -o print -f name license
 by checking the `LICENSE.md` or `LICENSE` files. Here we are digging a bit 
 deeper in order to see if there are other files that "may" contain licensing
 info in the root of the repo.
-
 
 
 ### Output
@@ -109,13 +119,14 @@ In case of file, this is the output (JSON-like):
 }
 ```
 
-#### Testing
+### Testing
 
 Run
 
 ```bash
 python3 -m unittest tests.py
 ```
+
 
 # License
 

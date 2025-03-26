@@ -34,8 +34,10 @@ class TestGroupByName(unittest.TestCase):
                 "name": "another-repo",
                 "private": False,
                 "html_url": "http://example.com/another-repo",
-                "license": {"spdx_id": "Apache-2.0",
-                            "name": "Apache License 2.0"},
+                "license": {
+                    "spdx_id": "Apache-2.0",
+                    "name": "Apache License 2.0",
+                },
                 "language": "Go",
                 "archived": False,
             },

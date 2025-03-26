@@ -22,7 +22,7 @@ if __name__ == "__main__":
         "-i",
         "--input",
         required=True,
-        help="Input type: 'org', 'repo', or 'list'."
+        help="Input type: 'org', 'repo', or 'list'.",
     )
     # name of the org, repo, or list
     ap.add_argument("name", help="Name of the organization or repository.")

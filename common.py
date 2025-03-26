@@ -29,9 +29,9 @@ def crawl(inputType: str, inputName: str) -> Optional[Dict]:
         elif inputType == "repo":
             repos = [g.get_repo(inputName)]
         elif inputType == "list":
-            repos = [g.get_repo(repo_name)
-                     for repo_name in inputName.split(",")
-                     ]
+            repos = [
+                g.get_repo(repo_name) for repo_name in inputName.split(",")
+            ]
         else:
             logging.error("Invalid input type.")
             return False
@@ -134,7 +134,7 @@ def group_by_name(results):
             "html_url": result.get("html_url"),
             "license": result.get("license"),
             "language": result.get("language"),
-            "archived": result.get("archived")
+            "archived": result.get("archived"),
         }
 
         # Ensure group exists
@@ -142,7 +142,7 @@ def group_by_name(results):
             dictionary[tok] = {
                 "count": 0,  # Start at 0 and increment
                 "private-repos": [],
-                "public-repos": []
+                "public-repos": [],
             }
 
         dictionary[tok]["count"] += 1  # Increment count

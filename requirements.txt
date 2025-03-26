@@ -1,12 +1,12 @@
+certifi==2024.7.4
 black==25.1.0
-certifi==2023.7.22
 cffi==1.15.1
 charset-normalizer==3.0.1
 click==8.1.8
 coverage==7.1.0
 Deprecated==1.2.18
 flake8==7.1.2
-idna==3.4
+idna==3.7
 mccabe==0.7.0
 mypy==0.991
 mypy-extensions==0.4.3

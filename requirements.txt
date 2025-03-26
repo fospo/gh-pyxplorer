@@ -11,7 +11,7 @@ mccabe==0.7.0
 mypy==0.991
 mypy-extensions==0.4.3
 pathspec==0.11.0
-platformdirs==2.6.2
+platformdirs==4.3.7
 pycparser==2.21
 PyGithub==2.6.1
 PyJWT==2.6.0

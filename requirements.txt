@@ -6,7 +6,7 @@ click==8.1.8
 coverage==7.1.0
 Deprecated==1.2.18
 flake8==6.0.0
-idna==3.4
+idna==3.7
 mccabe==0.7.0
 mypy==0.991
 mypy-extensions==0.4.3

@@ -9,7 +9,7 @@ flake8==7.2.0
 idna==3.10
 mccabe==0.7.0
 mypy==0.991
-mypy-extensions==0.4.3
+mypy-extensions==1.1.0
 pathspec==0.12.1
 platformdirs==4.3.7
 pycparser==2.22

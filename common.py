@@ -94,11 +94,15 @@ def check_other_license_names(repository: Repository.Repository) -> str:
 
     licenseNameList = [
         "license",
+        "licence",
         "licenza",
         "EUPL",
         "GPL",
+        "WTFPL",
+        "MIT",
         "licenza.txt",
         "license.txt",
+        "licence.txt"
     ]
 
     contents = repository.get_contents("")
